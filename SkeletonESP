@@ -1,4 +1,4 @@
-
+while wait() do
 --//Locals, etc:
 local plr = game.Players.LocalPlayer
 local camera = game.Workspace.CurrentCamera
@@ -443,6 +443,7 @@ game.Players.PlayerAdded:Connect(function(newplr)
                 end
             end
         end)
+    end
     end
     coroutine.wrap(ESP)()
 end)

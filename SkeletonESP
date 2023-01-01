@@ -1,3 +1,9 @@
+local Settings = {
+    Color = Color3.fromRGB(255, 0, 0), -- Color of the lines of the skeleton
+    Thickness = 2, -- Thickness of the lines of the Skeleton
+    Transparency = 1, -- 1 Visible - 0 Not Visible
+    AutoThickness = true -- Makes Thickness above futile, scales according to distance, good for less encumbered screen
+}
 while wait() do
 --//Locals, etc:
 local plr = game.Players.LocalPlayer

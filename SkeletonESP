@@ -85,8 +85,9 @@ function Framework:SetColor(object, color)
     end
 end
 
-function Framework:Render(player)
-    if Framework.Settings.Skeletons.Enabled then
+if Framework.Settings.Skeletons.Enabled then
+    
+    function Framework:Render(player)
 
     repeat wait() until player.Character ~= nil and player.Character:FindFirstChild("Humanoid") ~= nil
 
@@ -260,3 +261,4 @@ end)
 Players.PlayerRemoving:Connect(function(player)
     Framework:Derender(player)
 end)
+end

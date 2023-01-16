@@ -14,7 +14,7 @@ local Framework = {
     Cache = {},
     Settings = {
         Skeletons = {
-            Enabled = true,
+            Enabled = false,
             Color = Color3.fromRGB(255, 91, 91)
         }
     }
@@ -261,4 +261,4 @@ end)
 Players.PlayerRemoving:Connect(function(player)
     Framework:Derender(player)
 end)
-end
+return Framework

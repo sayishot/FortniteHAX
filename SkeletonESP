@@ -7,7 +7,6 @@
 ]]
 
 local Players, RunService = game:GetService("Players"), game:GetService("RunService")
-
 local Camera, LocalPlayer = workspace.CurrentCamera, Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
@@ -15,7 +14,7 @@ local Framework = {
     Cache = {},
     Settings = {
         Skeletons = {
-            Enabled = true,
+            Enabled = false,
             Color = Color3.fromRGB(255, 91, 91)
         }
     }
@@ -87,6 +86,8 @@ function Framework:SetColor(object, color)
 end
 
 function Framework:Render(player)
+    if Framework.Settings.Skeletons.Enabled then
+
     repeat wait() until player.Character ~= nil and player.Character:FindFirstChild("Humanoid") ~= nil
 
     local Limbs = Framework:GetLimbs(player)
@@ -228,6 +229,7 @@ function Framework:Render(player)
                 Framework:SetVisibility(Data, true)
             end
         else
+            
             Framework:SetVisibility(Data, false)
         end
     end)

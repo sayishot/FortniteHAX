@@ -14,7 +14,7 @@ local Framework = {
     Cache = {},
     Settings = {
         Skeletons = {
-            Enabled = false,
+            Enabled = true,
             Color = Color3.fromRGB(255, 91, 91)
         }
     }

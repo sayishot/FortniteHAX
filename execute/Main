@@ -1,5 +1,7 @@
 if game.PlaceId == 7183242684 then
 loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/StrengthTrainingSimulator!"))()
+elseif game.PlaceId == 606849621 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/Jailbreak"))()
 else
     game.Players.LocalPlayer:Kick("Wrong Game")
     end

@@ -1,9 +1,5 @@
 # FortniteHAX
-Games
------
-
-https://www.roblox.com/games/7183242684
-
+View The Games In The Games Folder Lol
 
 Script
 

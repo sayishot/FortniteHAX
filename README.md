@@ -1,5 +1,5 @@
-# FortniteHAX
-View The Games In The Games Folder Lol
+# /moonUtils
+# View The Games In The Games Folder Lol
 
 Script
 

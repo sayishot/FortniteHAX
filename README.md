@@ -3,7 +3,7 @@
 <br />
 <div align="center">
     <a href="https://github.com/sayishot/FortniteHAX">
-    <img src="images/images.png" alt="Logo" width="80" height="80">
+    <img src="images/images.png" alt="images" width="80" height="80">
   </a>
 
 
@@ -34,7 +34,6 @@ This project or /moonUtils was made by ash and astral
 this script can be used in many games, those games are listed in the /games folder.
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- LICENSE -->
@@ -42,6 +41,5 @@ this script can be used in many games, those games are listed in the /games fold
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 

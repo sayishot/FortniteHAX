@@ -3,7 +3,7 @@
 <br />
 <div align="center">
     <a href="https://github.com/sayishot/FortniteHAX">
-    <img src="images/images.png" alt="images" width="80" height="80">
+    <img src="images/image.png?raw=true" alt="images" width="80" height="80">
   </a>
 
 

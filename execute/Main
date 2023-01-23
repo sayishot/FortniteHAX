@@ -1,7 +1,11 @@
 if game.PlaceId == 7183242684 then
-loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/StrengthTrainingSimulator!"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/StrengthTrainingSimulator!.lua"))()
 elseif game.PlaceId == 606849621 then
-loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/Jailbreak"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/Jailbreak.lua"))()
+elseif game.PlaceId == 3956818381 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/NinjaLegends.lua"))()
+elseif game.PlaceId == 6075756195 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/ClickingHavoc.lua"))()
 else
     game.Players.LocalPlayer:Kick("Wrong Game")
     end

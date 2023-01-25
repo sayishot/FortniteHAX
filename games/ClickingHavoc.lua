@@ -1,4 +1,49 @@
-local a=loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/CustomFIeld/main/RayField.lua'))()local b=a:CreateWindow({Name="/moonUtils",LoadingTitle="Loading /moonUtils <3",LoadingSubtitle="by ash & astral",ConfigurationSaving={Enabled=true,FolderName="FortniteHAX",FileName="/moonUtils"},Discord={Enabled=true,Invite="YF2hQMeZgP"},KeySystem=true,KeySettings={Title="/moonUtils",Subtitle="Key System",Note="Join the discord (discord.gg/YF2hQMeZgP)",FileName="/moonUtilsKey",SaveKey=true,GrabKeyFromSite=false,Key="moon/Key/MadeWith<3"}})a:Notify({Title="LOADED",Content="This was made by ash˞#2200 & Astral#6076",Duration=6.5,Image=4483362458,Actions={Ignore={Name="Okay!",Callback=function()print("ash˞#2200")print("Astral#6076")end}}})
+local moon = loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/CustomFIeld/main/RayField.lua'))()
+local Window =
+moon:CreateWindow(
+    {
+        Name = "/moonUtils",
+        LoadingTitle = "Loading /moonUtils <3",
+        LoadingSubtitle = "by ash & astral",
+        ConfigurationSaving = {
+            Enabled = true,
+            FolderName = "FortniteHAX",
+            FileName = "/moonUtils"
+        },
+        Discord = {
+            Enabled = true,
+            Invite = "YF2hQMeZgP" -- The Discord invite code, do not include discord.gg/
+        },
+        KeySystem = true,
+        KeySettings = {
+            Title = "/moonUtils",
+            Subtitle = "Key System",
+            Note = "Join the discord (discord.gg/YF2hQMeZgP)",
+            FileName = "/moonUtilsKey",
+            SaveKey = true,
+            GrabKeyFromSite = false,
+            Key = "moon/Key/MadeWith<3"
+        }
+    }
+)
+
+moon:Notify(
+    {
+        Title = "LOADED",
+        Content = "This was made by ash˞#2200 & Astral#6076",
+        Duration = 6.5,
+        Image = 4483362458,
+        Actions = {
+            Ignore = {
+                Name = "Okay!",
+                Callback = function()
+                    print("ash˞#2200")
+                    print("Astral#6076")
+                end
+            }
+        }
+    }
+)
 local h = Window:CreateTab("Home", 4483362458) -- Title, Image
 local r = Window:CreateTab("Rebirth", 4483362458) -- Title, Image
 local i = Window:CreateTab("Info", 4483362458) -- Title, Image

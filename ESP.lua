@@ -631,4 +631,4 @@ game:GetService("Players").PlayerAdded:Connect(function(v)
         CreateEsp(v)
     end
 end)
-return ESP
+return Config

@@ -1,7 +1,7 @@
 local player = game:GetService('Players').LocalPlayer
 
 local Owner = {
-    1888980054,
+   
 }
 
 local Moderator = {
@@ -44,11 +44,11 @@ end
 local Indentify = function()
     for i,v in pairs(game:GetService('Players'):GetChildren()) do
         if table.find(Owner, v.UserId) then
-            giveEmoji(v.Name, '🎅 owner 🎅')
+            giveEmoji(v.Name, '🎅')
         elseif table.find(Moderator, v.UserId) then
-            giveEmoji(v.Name, '🌟 mod 🌟')
+            giveEmoji(v.Name, '🌟')
         elseif table.find(Premium, v.UserId) then
-            giveEmoji(v.Name, '⭐')
+            giveEmoji(v.Name, '🌌')
         elseif table.find(Cool, v.UserId) then
             giveEmoji(v.Name, '🔥')
         elseif table.find(Booster, v.UserId) then
@@ -59,7 +59,7 @@ local Indentify = function()
             giveEmoji(v.Name, '❌!! KILL !!❌')
         else
             if v.Character and v.Character:FindFirstChild('HumanoidRootPart') and not v.Character.HumanoidRootPart:FindFirstChild('OriginalSize') then
-               giveEmoji(v.Name, '🌌') 
+               giveEmoji(v.Name, '⭐') 
             end
         end
     end

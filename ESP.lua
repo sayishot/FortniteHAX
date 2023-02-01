@@ -1,569 +1,383 @@
-local Config = {
-	Box = false,
-	BoxOutline = false,
-	BoxColor = Color3.new(1, 1, 1),
-	BoxOutlineColor = Color3.new(0, 0, 0),
-	BoxFilled = false,
-	BoxFilledColor = Color3.new(1, 1, 1),
-	BoxFilledOpacity = 50,
-	HealthBar = false,
-	HealthBarSide = "Left",
-	HealthBarText = false,
-	HealthBarTextOutline = false,
-	HealthBarTextOutlineColor = Color3.new(0, 0, 0),
-	HealthBarTextFont = "Plex",
-	HealthBarTextSize = 13,
-	Names = false,
-	NamesOutline = false,
-	NamesDistance = false,
-	NamesColor = Color3.new(1, 1, 1),
-	NamesOutlineColor = Color3.new(0, 0, 0),
-	NamesFont = "Plex",
-	NamesSize = 13,
-	HeadDot = false,
-	HeadDotOutline = false,
-	HeadDotColor = Color3.new(1, 1, 1),
-	HeadDotOutlineColor = Color3.new(0, 0, 0),
-	HeadDotRadius = 5,
-	HeadDotNumSides = 14,
-	HeadDotFilled = false,
-	Tracer = false,
-	TracerColor = Color3.new(1, 1, 1),
-	TracerOutline = false,
-	TracerOutlineColor = Color3.new(0, 0, 0),
-	LookAngle = false,
-	LookAngleSize = 10,
-	LookAngleColor = Color3.new(1, 1, 1),
-	Skeleton = false,
-	SkeletonColor = Color3.new(1, 1, 1),
-	ESPEnabled = true,
-	TeamCheck = false,
-	MaxDistance = 2500,
-	UseTeamColor = false,
-	AimbotEnabled = false,
-	AimbotAiming = false,
-	AimbotTeamCheck = false,
-	AimbotDrawFOV = false,
-	AimbotDrawFOVOutline = false,
-	AimbotAimPart = "Head",
-	AimbotFOVRadius = 180,
-	AimbotFOVColor = Color3.new(1, 1, 1),
-	AimbotFOVOutlineColor = Color3.new(0, 0, 0),
-	AimbotSmoothing = 50,
-	AimbotFOVNumSides = 24,
-	AimbotMaxDistance = 2500
-};
-old = Drawing.new;
-local drawings = {};
-local updaters = {};
-Drawing.new = function(...)
-	local created = old(...);
-	drawings[(#drawings) + 1] = created;
-	return created;
-end;
-local function DrawLine()
-	local l = Drawing.new("Line");
-	l.Visible = false;
-	l.From = Vector2.new(0, 0);
-	l.To = Vector2.new(1, 1);
-	l.Color = Color3.fromRGB(255, 255, 255);
-	l.Thickness = 1;
-	l.ZIndex = 3;
-	return l;
-end;
-function CreateEsp(Player)
-	repeat
-		wait();
-	until Player.Character ~= nil and Player.Character:FindFirstChild("Humanoid") ~= nil;
-	local Box, BoxFilled, BoxOutline, Name, HealthBar, HealthBarOutline, HealthBarText, HeadDot, HeadDotOutline, Tracer, TracerOutline, LookAngle = Drawing.new("Square"), Drawing.new("Square"), Drawing.new("Square"), Drawing.new("Text"), Drawing.new("Square"), Drawing.new("Square"), Drawing.new("Text"), Drawing.new("Circle"), Drawing.new("Circle"), Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line");
-	local limbs = {};
-	local R15 = Player.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and true or false;
-	if R15 then
-		limbs = {
-			Head_UpperTorso = DrawLine(),
-			UpperTorso_LowerTorso = DrawLine(),
-			UpperTorso_LeftUpperArm = DrawLine(),
-			LeftUpperArm_LeftLowerArm = DrawLine(),
-			LeftLowerArm_LeftHand = DrawLine(),
-			UpperTorso_RightUpperArm = DrawLine(),
-			RightUpperArm_RightLowerArm = DrawLine(),
-			RightLowerArm_RightHand = DrawLine(),
-			LowerTorso_LeftUpperLeg = DrawLine(),
-			LeftUpperLeg_LeftLowerLeg = DrawLine(),
-			LeftLowerLeg_LeftFoot = DrawLine(),
-			LowerTorso_RightUpperLeg = DrawLine(),
-			RightUpperLeg_RightLowerLeg = DrawLine(),
-			RightLowerLeg_RightFoot = DrawLine()
-		};
-	else
-		limbs = {
-			Head_Spine = DrawLine(),
-			Spine = DrawLine(),
-			LeftArm = DrawLine(),
-			LeftArm_UpperTorso = DrawLine(),
-			RightArm = DrawLine(),
-			RightArm_UpperTorso = DrawLine(),
-			LeftLeg = DrawLine(),
-			LeftLeg_LowerTorso = DrawLine(),
-			RightLeg = DrawLine(),
-			RightLeg_LowerTorso = DrawLine()
-		};
-	end;
-	local function Visibility(state)
-		for i, v in pairs(limbs) do
-			v.Visible = state;
-		end;
-	end;
-	local function Colorize(color)
-		for i, v in pairs(limbs) do
-			v.Color = color;
-		end;
-	end;
-	local Updater = (game:GetService("RunService")).RenderStepped:Connect(function()
-		if Player.Character ~= nil and Player.Character:FindFirstChild("Humanoid") ~= nil and Player.Character:FindFirstChild("HumanoidRootPart") ~= nil and Player.Character.Humanoid.Health > 0 and Player.Character:FindFirstChild("Head") ~= nil then
-			local Target2dPosition, IsVisible = workspace.CurrentCamera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position);
-			local Target2dPositionHead = workspace.CurrentCamera:WorldToViewportPoint(Player.Character.Head.Position);
-			local scale_factor = 1 / (Target2dPosition.Z * math.tan(math.rad((workspace.CurrentCamera.FieldOfView * 0))) * 2) * 100;
-			local width, height = math.floor(40 * scale_factor), math.floor(60 * scale_factor);
-			local camera = (game:GetService("Workspace")).CurrentCamera;
-			if Config.ESPEnabled then
-				if Config.Box then
-					Box.Visible = IsVisible;
-					Box.Color = Config.BoxColor;
-					Box.Size = Vector2.new(width, height);
-					Box.Position = Vector2.new(Target2dPosition.X - Box.Size.X / 2, Target2dPosition.Y - Box.Size.Y / 2);
-					Box.Thickness = 1;
-					Box.ZIndex = 3;
-					if Config.BoxOutline then
-						BoxOutline.Visible = IsVisible;
-						BoxOutline.Color = Config.BoxOutlineColor;
-						BoxOutline.Size = Vector2.new(width, height);
-						BoxOutline.Position = Vector2.new(Target2dPosition.X - Box.Size.X / 2, Target2dPosition.Y - Box.Size.Y / 2);
-						BoxOutline.Thickness = 3;
-						BoxOutline.ZIndex = 2;
-					else
-						BoxOutline.Visible = false;
-					end;
-					if Config.BoxFilled then
-						BoxFilled.Visible = IsVisible;
-						BoxFilled.Color = Config.BoxFilledColor;
-						BoxFilled.Size = Vector2.new(width, height);
-						BoxFilled.Position = Vector2.new(Target2dPosition.X - Box.Size.X / 2, Target2dPosition.Y - Box.Size.Y / 2);
-						BoxFilled.Thickness = 1;
-						BoxFilled.Transparency = Config.BoxFilledOpacity / 100;
-						BoxFilled.ZIndex = 1;
-						BoxFilled.Filled = true;
-					else
-						BoxFilled.Visible = false;
-					end;
-				else
-					Box.Visible = false;
-					BoxOutline.Visible = false;
-					BoxFilled.Visible = false;
-				end;
-				if Config.Names then
-					Name.Visible = IsVisible;
-					Name.Color = Config.NamesColor;
-					Name.Center = true;
-					Name.Outline = Config.NamesOutline;
-					Name.OutlineColor = Config.NamesOutlineColor;
-					Name.Position = Vector2.new(Target2dPosition.X, Target2dPosition.Y - height * 0 + (-15));
-					Name.ZIndex = 3;
-					Name.Size = Config.NamesSize;
-					if Config.NamesFont == "UI" then
-						Name.Font = 0;
-					elseif Config.NamesFont == "System" then
-						Name.Font = 1;
-					elseif Config.NamesFont == "Plex" then
-						Name.Font = 2;
-					elseif Config.NamesFont == "Monospace" then
-						Name.Font = 3;
-					end;
-					if Config.NamesDistance then
-						Name.Text = "[" .. Player.Name .. "][" .. math.floor((workspace.CurrentCamera.CFrame.p - Player.Character.HumanoidRootPart.Position).magnitude) .. "m]";
-					else
-						Name.Text = Player.Name;
-					end;
-				else
-					Name.Visible = false;
-				end;
-				if Config.HealthBar then
-					HealthBarOutline.Visible = IsVisible;
-					HealthBarOutline.Color = Color3.fromRGB(0, 0, 0);
-					HealthBarOutline.Thickness = 3;
-					HealthBarOutline.Filled = true;
-					HealthBarOutline.ZIndex = 2;
-					HealthBar.Visible = IsVisible;
-					HealthBar.Color = (Color3.fromRGB(255, 0, 0)):lerp(Color3.fromRGB(0, 255, 0), (Player.Character:FindFirstChild("Humanoid")).Health / (Player.Character:FindFirstChild("Humanoid")).MaxHealth);
-					HealthBar.Thickness = 1;
-					HealthBar.Filled = true;
-					HealthBar.ZIndex = 3;
-					if Config.HealthBarText then
-						HealthBarText.Visible = IsVisible;
-						HealthBarText.Color = (Color3.fromRGB(255, 0, 0)):lerp(Color3.fromRGB(0, 255, 0), (Player.Character:FindFirstChild("Humanoid")).Health / (Player.Character:FindFirstChild("Humanoid")).MaxHealth);
-						HealthBarText.Size = Config.HealthBarTextSize;
-						HealthBarText.Outline = Config.HealthBarTextOutline;
-						HealthBarText.OutlineColor = Config.HealthBarTextOutlineColor;
-						HealthBarText.ZIndex = 3;
-						HealthBarText.Text = math.floor((Player.Character:FindFirstChild("Humanoid")).Health / (Player.Character:FindFirstChild("Humanoid")).MaxHealth * 100) .. "%";
-						if Config.HealthBarTextFont == "UI" then
-							HealthBarText.Font = 0;
-						elseif Config.HealthBarTextFont == "System" then
-							HealthBarText.Font = 1;
-						elseif Config.HealthBarTextFont == "Plex" then
-							HealthBarText.Font = 2;
-						elseif Config.HealthBarTextFont == "Monospace" then
-							HealthBarText.Font = 3;
-						end;
-					else
-						HealthBarText.Visible = false;
-					end;
-					if Config.HealthBarSide == "Left" then
-						HealthBarOutline.Size = Vector2.new(3, height);
-						HealthBarOutline.Position = Vector2.new(Target2dPosition.X - Box.Size.X / 2, Target2dPosition.Y - Box.Size.Y / 2) + Vector2.new((-6), 0);
-						HealthBar.Size = Vector2.new(1, (-(HealthBarOutline.Size.Y - 2)) * ((Player.Character:FindFirstChild("Humanoid")).Health / (Player.Character:FindFirstChild("Humanoid")).MaxHealth));
-						HealthBar.Position = HealthBarOutline.Position + Vector2.new(1, ((-1) + HealthBarOutline.Size.Y));
-						HealthBarText.Position = HealthBarOutline.Position + Vector2.new(((-Config.HealthBarTextSize) * 2 - 3), 0);
-					elseif Config.HealthBarSide == "Bottom" then
-						HealthBarOutline.Size = Vector2.new(width, 3);
-						HealthBarOutline.Position = Vector2.new(Target2dPosition.X - Box.Size.X / 2, Target2dPosition.Y - Box.Size.Y / 2) + Vector2.new(0, (height + 3));
-						HealthBar.Size = Vector2.new((HealthBarOutline.Size.X - 2) * ((Player.Character:FindFirstChild("Humanoid")).Health / (Player.Character:FindFirstChild("Humanoid")).MaxHealth), 1);
-						HealthBar.Position = HealthBarOutline.Position + Vector2.new(1, ((-2) + HealthBarOutline.Size.Y));
-						HealthBarText.Position = HealthBarOutline.Position + Vector2.new(0, 3);
-					elseif Config.HealthBarSide == "Right" then
-						HealthBarOutline.Size = Vector2.new(3, height);
-						HealthBarOutline.Position = Vector2.new(Target2dPosition.X - Box.Size.X / 2, Target2dPosition.Y - Box.Size.Y / 2) + Vector2.new((width + 3), 0);
-						HealthBar.Size = Vector2.new(1, (-(HealthBarOutline.Size.Y - 2)) * ((Player.Character:FindFirstChild("Humanoid")).Health / (Player.Character:FindFirstChild("Humanoid")).MaxHealth));
-						HealthBar.Position = HealthBarOutline.Position + Vector2.new(1, ((-1) + HealthBarOutline.Size.Y));
-						HealthBarText.Position = HealthBarOutline.Position + Vector2.new(5, 0);
-					end;
-				else
-					HealthBar.Visible = false;
-					HealthBarOutline.Visible = false;
-					HealthBarText.Visible = false;
-				end;
-				if Config.HeadDot then
-					HeadDot.Visible = IsVisible;
-					HeadDot.Color = Config.HeadDotColor;
-					HeadDot.Radius = Config.HeadDotRadius;
-					HeadDot.Position = Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y);
-					HeadDot.NumSides = Config.HeadDotNumSides;
-					HeadDot.Thickness = 1;
-					HeadDot.ZIndex = 3;
-					if Config.HeadDotOutline then
-						HeadDotOutline.Visible = IsVisible;
-						HeadDotOutline.Color = Config.HeadDotOutlineColor;
-						HeadDotOutline.Radius = Config.HeadDotRadius;
-						HeadDotOutline.Position = Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y);
-						HeadDotOutline.NumSides = Config.HeadDotNumSides;
-						HeadDotOutline.Thickness = 3;
-						HeadDotOutline.ZIndex = 2;
-					else
-						HeadDotOutline.Visible = false;
-					end;
-					if Config.HeadDotFilled then
-						HeadDot.Filled = true;
-					else
-						HeadDot.Filled = false;
-					end;
-				else
-					HeadDot.Visible = false;
-					HeadDotOutline.Visible = false;
-				end;
-				if Config.Tracer then
-					Tracer.Visible = IsVisible;
-					Tracer.Color = Config.TracerColor;
-					Tracer.Thickness = 1;
-					Tracer.ZIndex = 3;
-					Tracer.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1);
-					Tracer.To = Vector2.new(Target2dPosition.X, Target2dPosition.Y);
-					if Config.TracerOutline then
-						TracerOutline.Visible = IsVisible;
-						TracerOutline.Color = Config.TracerOutlineColor;
-						TracerOutline.Thickness = 3;
-						TracerOutline.ZIndex = 2;
-						TracerOutline.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1);
-						TracerOutline.To = Vector2.new(Target2dPosition.X, Target2dPosition.Y);
-					else
-						TracerOutline.Visible = false;
-					end;
-				else
-					Tracer.Visible = false;
-					TracerOutline.Visible = false;
-				end;
-				if Config.LookAngle then
-					local offsetCFrame = CFrame.new(0, 0, -Config.LookAngleSize);
-					local playerDirection = Player.Character.Head.CFrame:ToWorldSpace(offsetCFrame);
-					local playerDirectionPos, IsVisible2 = camera:WorldToViewportPoint(Vector3.new(playerDirection.X, playerDirection.Y, playerDirection.Z));
-					LookAngle.Visible = IsVisible2;
-					LookAngle.Color = Config.LookAngleColor;
-					LookAngle.Thickness = 1;
-					LookAngle.ZIndex = 3;
-					LookAngle.From = Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y);
-					LookAngle.To = Vector2.new(playerDirectionPos.X, playerDirectionPos.Y);
-				else
-					LookAngle.Visible = false;
-				end;
-				if Config.Skeleton then
-					Colorize(Config.SkeletonColor);
-					Visibility(IsVisible);
-					if R15 then
-						if limbs.Head_UpperTorso.From ~= Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y) then
-							local UT = camera:WorldToViewportPoint(Player.Character.UpperTorso.Position);
-							local LT = camera:WorldToViewportPoint(Player.Character.LowerTorso.Position);
-							local LUA = camera:WorldToViewportPoint(Player.Character.LeftUpperArm.Position);
-							local LLA = camera:WorldToViewportPoint(Player.Character.LeftLowerArm.Position);
-							local LH = camera:WorldToViewportPoint(Player.Character.LeftHand.Position);
-							local RUA = camera:WorldToViewportPoint(Player.Character.RightUpperArm.Position);
-							local RLA = camera:WorldToViewportPoint(Player.Character.RightLowerArm.Position);
-							local RH = camera:WorldToViewportPoint(Player.Character.RightHand.Position);
-							local LUL = camera:WorldToViewportPoint(Player.Character.LeftUpperLeg.Position);
-							local LLL = camera:WorldToViewportPoint(Player.Character.LeftLowerLeg.Position);
-							local LF = camera:WorldToViewportPoint(Player.Character.LeftFoot.Position);
-							local RUL = camera:WorldToViewportPoint(Player.Character.RightUpperLeg.Position);
-							local RLL = camera:WorldToViewportPoint(Player.Character.RightLowerLeg.Position);
-							local RF = camera:WorldToViewportPoint(Player.Character.RightFoot.Position);
-							limbs.Head_UpperTorso.From = Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y);
-							limbs.Head_UpperTorso.To = Vector2.new(UT.X, UT.Y);
-							limbs.UpperTorso_LowerTorso.From = Vector2.new(UT.X, UT.Y);
-							limbs.UpperTorso_LowerTorso.To = Vector2.new(LT.X, LT.Y);
-							limbs.UpperTorso_LeftUpperArm.From = Vector2.new(UT.X, UT.Y);
-							limbs.UpperTorso_LeftUpperArm.To = Vector2.new(LUA.X, LUA.Y);
-							limbs.LeftUpperArm_LeftLowerArm.From = Vector2.new(LUA.X, LUA.Y);
-							limbs.LeftUpperArm_LeftLowerArm.To = Vector2.new(LLA.X, LLA.Y);
-							limbs.LeftLowerArm_LeftHand.From = Vector2.new(LLA.X, LLA.Y);
-							limbs.LeftLowerArm_LeftHand.To = Vector2.new(LH.X, LH.Y);
-							limbs.UpperTorso_RightUpperArm.From = Vector2.new(UT.X, UT.Y);
-							limbs.UpperTorso_RightUpperArm.To = Vector2.new(RUA.X, RUA.Y);
-							limbs.RightUpperArm_RightLowerArm.From = Vector2.new(RUA.X, RUA.Y);
-							limbs.RightUpperArm_RightLowerArm.To = Vector2.new(RLA.X, RLA.Y);
-							limbs.RightLowerArm_RightHand.From = Vector2.new(RLA.X, RLA.Y);
-							limbs.RightLowerArm_RightHand.To = Vector2.new(RH.X, RH.Y);
-							limbs.LowerTorso_LeftUpperLeg.From = Vector2.new(LT.X, LT.Y);
-							limbs.LowerTorso_LeftUpperLeg.To = Vector2.new(LUL.X, LUL.Y);
-							limbs.LeftUpperLeg_LeftLowerLeg.From = Vector2.new(LUL.X, LUL.Y);
-							limbs.LeftUpperLeg_LeftLowerLeg.To = Vector2.new(LLL.X, LLL.Y);
-							limbs.LeftLowerLeg_LeftFoot.From = Vector2.new(LLL.X, LLL.Y);
-							limbs.LeftLowerLeg_LeftFoot.To = Vector2.new(LF.X, LF.Y);
-							limbs.LowerTorso_RightUpperLeg.From = Vector2.new(LT.X, LT.Y);
-							limbs.LowerTorso_RightUpperLeg.To = Vector2.new(RUL.X, RUL.Y);
-							limbs.RightUpperLeg_RightLowerLeg.From = Vector2.new(RUL.X, RUL.Y);
-							limbs.RightUpperLeg_RightLowerLeg.To = Vector2.new(RLL.X, RLL.Y);
-							limbs.RightLowerLeg_RightFoot.From = Vector2.new(RLL.X, RLL.Y);
-							limbs.RightLowerLeg_RightFoot.To = Vector2.new(RF.X, RF.Y);
-						end;
-					elseif limbs.Head_Spine.From ~= Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y) then
-						local T_Height = Player.Character.Torso.Size.Y / 2 - 0;
-						local UT2 = camera:WorldToViewportPoint((Player.Character.Torso.CFrame * CFrame.new(0, T_Height, 0)).p);
-						local LT2 = camera:WorldToViewportPoint((Player.Character.Torso.CFrame * CFrame.new(0, (-T_Height), 0)).p);
-						local LA_Height = Player.Character["Left Arm"].Size.Y / 2 - 0;
-						local LUA2 = camera:WorldToViewportPoint((Player.Character["Left Arm"].CFrame * CFrame.new(0, LA_Height, 0)).p);
-						local LLA2 = camera:WorldToViewportPoint((Player.Character["Left Arm"].CFrame * CFrame.new(0, (-LA_Height), 0)).p);
-						local RA_Height = Player.Character["Right Arm"].Size.Y / 2 - 0;
-						local RUA2 = camera:WorldToViewportPoint((Player.Character["Right Arm"].CFrame * CFrame.new(0, RA_Height, 0)).p);
-						local RLA2 = camera:WorldToViewportPoint((Player.Character["Right Arm"].CFrame * CFrame.new(0, (-RA_Height), 0)).p);
-						local LL_Height = Player.Character["Left Leg"].Size.Y / 2 - 0;
-						local LUL2 = camera:WorldToViewportPoint((Player.Character["Left Leg"].CFrame * CFrame.new(0, LL_Height, 0)).p);
-						local LLL2 = camera:WorldToViewportPoint((Player.Character["Left Leg"].CFrame * CFrame.new(0, (-LL_Height), 0)).p);
-						local RL_Height = Player.Character["Right Leg"].Size.Y / 2 - 0;
-						local RUL2 = camera:WorldToViewportPoint((Player.Character["Right Leg"].CFrame * CFrame.new(0, RL_Height, 0)).p);
-						local RLL2 = camera:WorldToViewportPoint((Player.Character["Right Leg"].CFrame * CFrame.new(0, (-RL_Height), 0)).p);
-						limbs.Head_Spine.From = Vector2.new(Target2dPositionHead.X, Target2dPositionHead.Y);
-						limbs.Head_Spine.To = Vector2.new(UT2.X, UT2.Y);
-						limbs.Spine.From = Vector2.new(UT2.X, UT2.Y);
-						limbs.Spine.To = Vector2.new(LT2.X, LT2.Y);
-						limbs.LeftArm.From = Vector2.new(LUA2.X, LUA2.Y);
-						limbs.LeftArm.To = Vector2.new(LLA2.X, LLA2.Y);
-						limbs.LeftArm_UpperTorso.From = Vector2.new(UT2.X, UT2.Y);
-						limbs.LeftArm_UpperTorso.To = Vector2.new(LUA2.X, LUA2.Y);
-						limbs.RightArm.From = Vector2.new(RUA2.X, RUA2.Y);
-						limbs.RightArm.To = Vector2.new(RLA2.X, RLA2.Y);
-						limbs.RightArm_UpperTorso.From = Vector2.new(UT2.X, UT2.Y);
-						limbs.RightArm_UpperTorso.To = Vector2.new(RUA2.X, RUA2.Y);
-						limbs.LeftLeg.From = Vector2.new(LUL2.X, LUL2.Y);
-						limbs.LeftLeg.To = Vector2.new(LLL2.X, LLL2.Y);
-						limbs.LeftLeg_LowerTorso.From = Vector2.new(LT2.X, LT2.Y);
-						limbs.LeftLeg_LowerTorso.To = Vector2.new(LUL2.X, LUL2.Y);
-						limbs.RightLeg.From = Vector2.new(RUL2.X, RUL2.Y);
-						limbs.RightLeg.To = Vector2.new(RLL2.X, RLL2.Y);
-						limbs.RightLeg_LowerTorso.From = Vector2.new(LT2.X, LT2.Y);
-						limbs.RightLeg_LowerTorso.To = Vector2.new(RUL2.X, RUL2.Y);
-					end;
-				else
-					Visibility(false);
-				end;
-				if Config.MaxDistance < math.floor((workspace.CurrentCamera.CFrame.p - Player.Character.HumanoidRootPart.Position).magnitude) then
-					Box.Visible = false;
-					BoxOutline.Visible = false;
-					BoxFilled.Visible = false;
-					Name.Visible = false;
-					HealthBar.Visible = false;
-					HealthBarOutline.Visible = false;
-					HealthBarText.Visible = false;
-					HeadDot.Visible = false;
-					HeadDotOutline.Visible = false;
-					Tracer.Visible = false;
-					TracerOutline.Visible = false;
-					LookAngle.Visible = false;
-					Visibility(false);
-				end;
-				if Config.UseTeamColor then
-					Box.Color = Player.TeamColor.Color;
-					BoxFilled.Color = Player.TeamColor.Color;
-					Name.Color = Player.TeamColor.Color;
-					HeadDot.Color = Player.TeamColor.Color;
-					Tracer.Color = Player.TeamColor.Color;
-					LookAngle.Color = Player.TeamColor.Color;
-					Colorize(Player.TeamColor.Color);
-				end;
-				if Config.TeamCheck and Player.TeamColor == (game:GetService("Players")).LocalPlayer.TeamColor then
-					Box.Visible = false;
-					BoxOutline.Visible = false;
-					BoxFilled.Visible = false;
-					Name.Visible = false;
-					HealthBar.Visible = false;
-					HealthBarOutline.Visible = false;
-					HealthBarText.Visible = false;
-					HeadDot.Visible = false;
-					HeadDotOutline.Visible = false;
-					Tracer.Visible = false;
-					TracerOutline.Visible = false;
-					LookAngle.Visible = false;
-					Visibility(false);
-				end;
-			else
-				Box.Visible = false;
-				BoxOutline.Visible = false;
-				BoxFilled.Visible = false;
-				Name.Visible = false;
-				HealthBar.Visible = false;
-				HealthBarOutline.Visible = false;
-				HealthBarText.Visible = false;
-				HeadDot.Visible = false;
-				HeadDotOutline.Visible = false;
-				Tracer.Visible = false;
-				TracerOutline.Visible = false;
-				LookAngle.Visible = false;
-				Visibility(false);
-			end;
-		else
-			Box.Visible = false;
-			BoxOutline.Visible = false;
-			BoxFilled.Visible = false;
-			Name.Visible = false;
-			HealthBar.Visible = false;
-			HealthBarOutline.Visible = false;
-			HealthBarText.Visible = false;
-			HeadDot.Visible = false;
-			HeadDotOutline.Visible = false;
-			Tracer.Visible = false;
-			TracerOutline.Visible = false;
-			LookAngle.Visible = false;
-			Visibility(false);
-			if not Player then
-				Box:Remove();
-				BoxOutline:Remove();
-				BoxFilled:Remove();
-				Name:Remove();
-				HealthBar:Remove();
-				HealthBarOutline:Remove();
-				HealthBarText:Remove();
-				HeadDot:Remove();
-				HeadDotOutline:Remove();
-				Tracer:Remove();
-				TracerOutline:Remove();
-				LookAngle:Remove();
-				Updater:Disconnect();
-				for i, v in pairs(limbs) do
-					v:Remove();
-				end;
-			end;
-		end;
-	end);
-	updaters[(#updaters) + 1] = Updater;
-end;
-local fovcircle, fovcircleoutline = Drawing.new("Circle"), Drawing.new("Circle");
-fovcircle.Thickness = 1;
-fovcircle.Filled = false;
-fovcircle.Transparency = 1;
-fovcircle.ZIndex = 3;
-fovcircleoutline.Thickness = 3;
-fovcircleoutline.Filled = false;
-fovcircleoutline.Transparency = 1;
-fovcircleoutline.ZIndex = 2;
-function getplayer()
-	local ClosestPlayer = nil;
-	local FarthestDistance = math.huge;
-	local MouseLocation = (game:GetService("UserInputService")):GetMouseLocation();
-	for i, player in pairs((game:GetService("Players")):GetPlayers()) do
-		if player == (game:GetService("Players")).LocalPlayer then
-			continue;
-		end;
-		if (player.Character:FindFirstChild("Humanoid")).Health > 0 and player ~= (game:GetService("Players")).LocalPlayer then
-			if player.TeamColor ~= (game:GetService("Players")).LocalPlayer.TeamColor and Config.AimbotTeamCheck or Config.AimbotTeamCheck == false then
-				local character = player.Character;
-				local char_part_pos, is_onscreen = workspace.CurrentCamera:WorldToViewportPoint(character[Config.AimbotAimPart].Position);
-				if is_onscreen then
-					local MouseDistance = (Vector2.new(char_part_pos.X, char_part_pos.Y) - MouseLocation).Magnitude;
-					if MouseDistance < FarthestDistance and MouseDistance <= Config.AimbotFOVRadius and math.floor((workspace.CurrentCamera.CFrame.p - character.HumanoidRootPart.Position).magnitude) < Config.AimbotMaxDistance then
-						FarthestDistance = MouseDistance;
-						ClosestPlayer = player;
-					end;
-				end;
-			end;
-		end;
-	end;
-	return ClosestPlayer;
-end;
-local updater1 = (game:GetService("RunService")).RenderStepped:Connect(function()
-	fovcircle.Radius = Config.AimbotFOVRadius;
-	fovcircle.Color = Config.AimbotFOVColor;
-	fovcircle.NumSides = Config.AimbotFOVNumSides;
-	fovcircleoutline.NumSides = Config.AimbotFOVNumSides;
-	fovcircleoutline.Radius = Config.AimbotFOVRadius;
-	fovcircleoutline.Color = Config.AimbotFOVOutlineColor;
-	fovcircle.Position = Vector2.new(((game:GetService("UserInputService")):GetMouseLocation()).X, ((game:GetService("UserInputService")):GetMouseLocation()).Y);
-	fovcircleoutline.Position = fovcircle.Position;
-	if Config.AimbotDrawFOV and Config.AimbotDrawFOVOutline then
-		fovcircleoutline.Visible = true;
-	else
-		fovcircleoutline.Visible = false;
-	end;
-	if Config.AimbotEnabled then
-		fovcircle.Visible = Config.AimbotDrawFOV;
-	else
-		fovcircle.Visible = false;
-		fovcircleoutline.Visible = false;
-	end;
-	if Config.AimbotAiming and Config.AimbotEnabled then
-		local ClosestPlayer = getplayer();
-		local character = ClosestPlayer.Character;
-		if ClosestPlayer ~= nil then
-			local char_part_pos, is_onscreen = workspace.CurrentCamera:WorldToViewportPoint(character[Config.AimbotAimPart].Position);
-			if char_part_pos and is_onscreen then
-				local MouseLocation = (game:GetService("UserInputService")):GetMouseLocation();
-				mousemoverel((char_part_pos.X - MouseLocation.X) / (Config.AimbotSmoothing / 10), (char_part_pos.Y - MouseLocation.Y) / (Config.AimbotSmoothing / 10));
-			end;
-		end;
-	end;
-end);
-updaters[(#updaters) + 1] = updater1;
-function DestroyEsp()
-	for i, v in pairs(drawings) do
-		v:Remove();
-	end;
-	for i, v in pairs(updaters) do
-		v:Disconnect();
-	end;
-end;
-for _, v in pairs((game:GetService("Players")):GetPlayers()) do
-	if v ~= (game:GetService("Players")).LocalPlayer then
-		CreateEsp(v);
-	end;
-end;
-(game:GetService("Players")).PlayerAdded:Connect(function(v)
-	if v ~= (game:GetService("Players")).LocalPlayer then
-		CreateEsp(v);
-	end;
-end);
-return Config;
+--Settings--
+local ESP = {
+    Enabled = false,
+    Boxes = true,
+    BoxShift = CFrame.new(0,-1.5,0),
+	BoxSize = Vector3.new(4,6,0),
+    Color = Color3.fromRGB(255, 170, 0),
+    FaceCamera = false,
+    Names = true,
+    TeamColor = true,
+    Thickness = 2,
+    AttachShift = 1,
+    TeamMates = true,
+    Players = true,
+    
+    Objects = setmetatable({}, {__mode="kv"}),
+    Overrides = {}
+}
+
+--Declarations--
+local cam = workspace.CurrentCamera
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local mouse = plr:GetMouse()
+
+local V3new = Vector3.new
+local WorldToViewportPoint = cam.WorldToViewportPoint
+
+--Functions--
+local function Draw(obj, props)
+	local new = Drawing.new(obj)
+	
+	props = props or {}
+	for i,v in pairs(props) do
+		new[i] = v
+	end
+	return new
+end
+
+function ESP:GetTeam(p)
+	local ov = self.Overrides.GetTeam
+	if ov then
+		return ov(p)
+	end
+	
+	return p and p.Team
+end
+
+function ESP:IsTeamMate(p)
+    local ov = self.Overrides.IsTeamMate
+	if ov then
+		return ov(p)
+    end
+    
+    return self:GetTeam(p) == self:GetTeam(plr)
+end
+
+function ESP:GetColor(obj)
+	local ov = self.Overrides.GetColor
+	if ov then
+		return ov(obj)
+    end
+    local p = self:GetPlrFromChar(obj)
+	return p and self.TeamColor and p.Team and p.Team.TeamColor.Color or self.Color
+end
+
+function ESP:GetPlrFromChar(char)
+	local ov = self.Overrides.GetPlrFromChar
+	if ov then
+		return ov(char)
+	end
+	
+	return plrs:GetPlayerFromCharacter(char)
+end
+
+function ESP:Toggle(bool)
+    self.Enabled = bool
+    if not bool then
+        for i,v in pairs(self.Objects) do
+            if v.Type == "Box" then --fov circle etc
+                if v.Temporary then
+                    v:Remove()
+                else
+                    for i,v in pairs(v.Components) do
+                        v.Visible = false
+                    end
+                end
+            end
+        end
+    end
+end
+
+function ESP:GetBox(obj)
+    return self.Objects[obj]
+end
+
+function ESP:AddObjectListener(parent, options)
+    local function NewListener(c)
+        if type(options.Type) == "string" and c:IsA(options.Type) or options.Type == nil then
+            if type(options.Name) == "string" and c.Name == options.Name or options.Name == nil then
+                if not options.Validator or options.Validator(c) then
+                    local box = ESP:Add(c, {
+                        PrimaryPart = type(options.PrimaryPart) == "string" and c:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(c),
+                        Color = type(options.Color) == "function" and options.Color(c) or options.Color,
+                        ColorDynamic = options.ColorDynamic,
+                        Name = type(options.CustomName) == "function" and options.CustomName(c) or options.CustomName,
+                        IsEnabled = options.IsEnabled,
+                        RenderInNil = options.RenderInNil
+                    })
+                    --TODO: add a better way of passing options
+                    if options.OnAdded then
+                        coroutine.wrap(options.OnAdded)(box)
+                    end
+                end
+            end
+        end
+    end
+
+    if options.Recursive then
+        parent.DescendantAdded:Connect(NewListener)
+        for i,v in pairs(parent:GetDescendants()) do
+            coroutine.wrap(NewListener)(v)
+        end
+    else
+        parent.ChildAdded:Connect(NewListener)
+        for i,v in pairs(parent:GetChildren()) do
+            coroutine.wrap(NewListener)(v)
+        end
+    end
+end
+
+local boxBase = {}
+boxBase.__index = boxBase
+
+function boxBase:Remove()
+    ESP.Objects[self.Object] = nil
+    for i,v in pairs(self.Components) do
+        v.Visible = false
+        v:Remove()
+        self.Components[i] = nil
+    end
+end
+
+function boxBase:Update()
+    if not self.PrimaryPart then
+        --warn("not supposed to print", self.Object)
+        return self:Remove()
+    end
+
+    local color
+    if ESP.Highlighted == self.Object then
+       color = ESP.HighlightColor
+    else
+        color = self.Color or self.ColorDynamic and self:ColorDynamic() or ESP:GetColor(self.Object) or ESP.Color
+    end
+
+    local allow = true
+    if ESP.Overrides.UpdateAllow and not ESP.Overrides.UpdateAllow(self) then
+        allow = false
+    end
+    if self.Player and not ESP.TeamMates and ESP:IsTeamMate(self.Player) then
+        allow = false
+    end
+    if self.Player and not ESP.Players then
+        allow = false
+    end
+    if self.IsEnabled and (type(self.IsEnabled) == "string" and not ESP[self.IsEnabled] or type(self.IsEnabled) == "function" and not self:IsEnabled()) then
+        allow = false
+    end
+    if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
+        allow = false
+    end
+
+    if not allow then
+        for i,v in pairs(self.Components) do
+            v.Visible = false
+        end
+        return
+    end
+
+    if ESP.Highlighted == self.Object then
+        color = ESP.HighlightColor
+    end
+
+    --calculations--
+    local cf = self.PrimaryPart.CFrame
+    if ESP.FaceCamera then
+        cf = CFrame.new(cf.p, cam.CFrame.p)
+    end
+    local size = self.Size
+    local locs = {
+        TopLeft = cf * ESP.BoxShift * CFrame.new(size.X/2,size.Y/2,0),
+        TopRight = cf * ESP.BoxShift * CFrame.new(-size.X/2,size.Y/2,0),
+        BottomLeft = cf * ESP.BoxShift * CFrame.new(size.X/2,-size.Y/2,0),
+        BottomRight = cf * ESP.BoxShift * CFrame.new(-size.X/2,-size.Y/2,0),
+        TagPos = cf * ESP.BoxShift * CFrame.new(0,size.Y/2,0),
+        Torso = cf * ESP.BoxShift
+    }
+
+    if ESP.Boxes then
+        local TopLeft, Vis1 = WorldToViewportPoint(cam, locs.TopLeft.p)
+        local TopRight, Vis2 = WorldToViewportPoint(cam, locs.TopRight.p)
+        local BottomLeft, Vis3 = WorldToViewportPoint(cam, locs.BottomLeft.p)
+        local BottomRight, Vis4 = WorldToViewportPoint(cam, locs.BottomRight.p)
+
+        if self.Components.Quad then
+            if Vis1 or Vis2 or Vis3 or Vis4 then
+                self.Components.Quad.Visible = true
+                self.Components.Quad.PointA = Vector2.new(TopRight.X, TopRight.Y)
+                self.Components.Quad.PointB = Vector2.new(TopLeft.X, TopLeft.Y)
+                self.Components.Quad.PointC = Vector2.new(BottomLeft.X, BottomLeft.Y)
+                self.Components.Quad.PointD = Vector2.new(BottomRight.X, BottomRight.Y)
+                self.Components.Quad.Color = color
+            else
+                self.Components.Quad.Visible = false
+            end
+        end
+    else
+        self.Components.Quad.Visible = false
+    end
+
+    if ESP.Names then
+        local TagPos, Vis5 = WorldToViewportPoint(cam, locs.TagPos.p)
+        
+        if Vis5 then
+            self.Components.Name.Visible = true
+            self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y)
+            self.Components.Name.Text = self.Name
+            self.Components.Name.Color = color
+            
+            self.Components.Distance.Visible = true
+            self.Components.Distance.Position = Vector2.new(TagPos.X, TagPos.Y + 14)
+            self.Components.Distance.Text = math.floor((cam.CFrame.p - cf.p).magnitude) .."m away"
+            self.Components.Distance.Color = color
+        else
+            self.Components.Name.Visible = false
+            self.Components.Distance.Visible = false
+        end
+    else
+        self.Components.Name.Visible = false
+        self.Components.Distance.Visible = false
+    end
+    
+    if ESP.Tracers then
+        local TorsoPos, Vis6 = WorldToViewportPoint(cam, locs.Torso.p)
+
+        if Vis6 then
+            self.Components.Tracer.Visible = true
+            self.Components.Tracer.From = Vector2.new(TorsoPos.X, TorsoPos.Y)
+            self.Components.Tracer.To = Vector2.new(cam.ViewportSize.X/2,cam.ViewportSize.Y/ESP.AttachShift)
+            self.Components.Tracer.Color = color
+        else
+            self.Components.Tracer.Visible = false
+        end
+    else
+        self.Components.Tracer.Visible = false
+    end
+end
+
+function ESP:Add(obj, options)
+    if not obj.Parent and not options.RenderInNil then
+        return warn(obj, "has no parent")
+    end
+
+    local box = setmetatable({
+        Name = options.Name or obj.Name,
+        Type = "Box",
+        Color = options.Color --[[or self:GetColor(obj)]],
+        Size = options.Size or self.BoxSize,
+        Object = obj,
+        Player = options.Player or plrs:GetPlayerFromCharacter(obj),
+        PrimaryPart = options.PrimaryPart or obj.ClassName == "Model" and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj:IsA("BasePart") and obj,
+        Components = {},
+        IsEnabled = options.IsEnabled,
+        Temporary = options.Temporary,
+        ColorDynamic = options.ColorDynamic,
+        RenderInNil = options.RenderInNil
+    }, boxBase)
+
+    if self:GetBox(obj) then
+        self:GetBox(obj):Remove()
+    end
+
+    box.Components["Quad"] = Draw("Quad", {
+        Thickness = self.Thickness,
+        Color = color,
+        Transparency = 1,
+        Filled = false,
+        Visible = self.Enabled and self.Boxes
+    })
+    box.Components["Name"] = Draw("Text", {
+		Text = box.Name,
+		Color = box.Color,
+		Center = true,
+		Outline = true,
+        Size = 19,
+        Visible = self.Enabled and self.Names
+	})
+	box.Components["Distance"] = Draw("Text", {
+		Color = box.Color,
+		Center = true,
+		Outline = true,
+        Size = 19,
+        Visible = self.Enabled and self.Names
+	})
+	
+	box.Components["Tracer"] = Draw("Line", {
+		Thickness = ESP.Thickness,
+		Color = box.Color,
+        Transparency = 1,
+        Visible = self.Enabled and self.Tracers
+    })
+    self.Objects[obj] = box
+    
+    obj.AncestryChanged:Connect(function(_, parent)
+        if parent == nil and ESP.AutoRemove ~= false then
+            box:Remove()
+        end
+    end)
+    obj:GetPropertyChangedSignal("Parent"):Connect(function()
+        if obj.Parent == nil and ESP.AutoRemove ~= false then
+            box:Remove()
+        end
+    end)
+
+    local hum = obj:FindFirstChildOfClass("Humanoid")
+	if hum then
+        hum.Died:Connect(function()
+            if ESP.AutoRemove ~= false then
+                box:Remove()
+            end
+		end)
+    end
+
+    return box
+end
+
+local function CharAdded(char)
+    local p = plrs:GetPlayerFromCharacter(char)
+    if not char:FindFirstChild("HumanoidRootPart") then
+        local ev
+        ev = char.ChildAdded:Connect(function(c)
+            if c.Name == "HumanoidRootPart" then
+                ev:Disconnect()
+                ESP:Add(char, {
+                    Name = p.Name,
+                    Player = p,
+                    PrimaryPart = c
+                })
+            end
+        end)
+    else
+        ESP:Add(char, {
+            Name = p.Name,
+            Player = p,
+            PrimaryPart = char.HumanoidRootPart
+        })
+    end
+end
+local function PlayerAdded(p)
+    p.CharacterAdded:Connect(CharAdded)
+    if p.Character then
+        coroutine.wrap(CharAdded)(p.Character)
+    end
+end
+plrs.PlayerAdded:Connect(PlayerAdded)
+for i,v in pairs(plrs:GetPlayers()) do
+    if v ~= plr then
+        PlayerAdded(v)
+    end
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    cam = workspace.CurrentCamera
+    for i,v in (ESP.Enabled and pairs or ipairs)(ESP.Objects) do
+        if v.Update then
+            local s,e = pcall(v.Update, v)
+            if not s then warn("[EU]", e, v.Object:GetFullName()) end
+        end
+    end
+end)
+
+return ESP

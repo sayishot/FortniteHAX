@@ -1,0 +1,98 @@
+local a = {};
+local b = {};
+local c = {};
+local d = {};
+local e = {};
+local f = {};
+local function g()
+	local h = 3;
+	local i = checkcaller;
+	local j = getrawmetatable(game);
+	setreadonly(j, false);
+	local k = j.__index;
+	local l = j.__newindex;
+	local m = j.__namecall;
+	j.__index = newcclosure(function(n, o)
+		if i() then
+			return k(n, o);
+		end;
+		if a[n] and a[n][o] then
+			local p = a[n][o];
+			if p.IsCallback == true then
+				return p.Value(n);
+			else
+				return p.Value;
+			end;
+		end;
+		if c[o] then
+			local q = c[o];
+			if q.IsCallback == true then
+				return q.Value(n);
+			else
+				return q.Value;
+			end;
+		end;
+		if e[n] and e[n][o] then
+			return f[n][o];
+		end;
+		return k(n, o);
+	end);
+	j.__newindex = newcclosure(function(r, s, t)
+		if i() then
+			return l(r, s, t);
+		end;
+		if b[r] and b[r][s] then
+			local u = b[r][s];
+			if u.Callback == nil then
+				return;
+			else
+				u.Callback(r, t);
+				return;
+			end;
+		end;
+		if d[s] then
+			local v = d[s];
+			if v.Callback == nil then
+				return;
+			else
+				v.Callback(r, t);
+				return;
+			end;
+		end;
+		if e[r] and e[r][s] then
+			local w = e[r][s];
+			if type(t) ~= w.Type then
+				error("bad argument #3 to '" .. s .. "' (" .. w.Type .. " expected, got " .. type(s) .. ")");
+			end;
+			f[r][s] = t;
+			return;
+		end;
+		return l(r, s, t);
+	end);
+	local x = game.Players.LocalPlayer.Character.Humanoid;
+	local function v(y)
+		local z = k(x, y);
+		local A = type(z);
+		if not e[x] then
+			e[x] = {};
+		end;
+		if not f[x] then
+			f[x] = {};
+		end;
+		e[x][y] = {
+			Type = A
+		};
+		f[x][y] = k(x, y);
+		local B = function()
+			e[x][y] = nil;
+			f[x][y] = nil;
+		end;
+		return {
+			remove = B,
+			Remove = B
+		};
+	end;
+	v("WalkSpeed");
+	v("JumpPower");
+end;
+g();

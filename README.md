@@ -25,7 +25,7 @@
 ## About The Project
 
 
-This project or /moonUtils was made by ash and astral
+This project or /moonUtils was made by ash
 
 
 <!-- USAGE EXAMPLES -->

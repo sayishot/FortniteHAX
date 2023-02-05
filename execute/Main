@@ -9,6 +9,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/
 elseif game.PlaceId == 9824221333 then
 loadstring(game:HttpGet("https://raw.githubusercontent.com/sayishot/FortniteHAX/main/games/DaHoodAimTrainer.lua"))()
 else
-local Notification = {
-Title = "/moonUtils ERROR",Text = "Wrong game!",Icon = "";}game.StarterGui:SetCore("SendNotification", Notification)}
+print("ERROR")
+local Notification = {Title = "/moonUtils ERROR",Text = "Wrong Game.",Icon = "";}game.StarterGui:SetCore("SendNotification", Notification)
 end

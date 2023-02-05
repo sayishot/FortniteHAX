@@ -1,10 +1,11 @@
-local plr = (game:GetService("Players")).LocalPlayer
+local player = (game:GetService("Players")).LocalPlayer
 local munk = function(L_3_arg0)
-	plr:Kick("\nYo ah got blacklisted somehow for reason: "..L_3_arg0.."\n If you think this is a mistake, send this in cmds in https://discord.gg/S9tfYm2hR2")
+	player:Kick("\nYo ah got blacklisted somehow for reason: "..L_3_arg0.."\n If you think this is a mistake, send this in cmds in .gg/sFTMyURMeR")
+	setclipboard(".gg/sFTMyURMeR")
 	task.wait(1)
 	while true do
 	end
 end
-if plr.UserId == 1 then
+if player.UserId == 1 then
 	munk("Roblox + Test")
 end

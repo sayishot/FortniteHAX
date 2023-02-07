@@ -1,6 +1,5 @@
 Whitelisted = { 
-  1888980054,
-  3186859834,
+game:GetService("Players").LocalPlayer.UserId
 } 
 
 return Whitelisted

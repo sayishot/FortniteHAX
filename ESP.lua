@@ -4,7 +4,7 @@ local ESP = {
     Boxes = true,
     BoxShift = CFrame.new(0,-1.5,0),
 	BoxSize = Vector3.new(4,6,0),
-    Color = Color3.fromHSV(h, s, v),
+    Color = Color3.fromHSV(255,146,255),
     FaceCamera = false,
     Names = true,
     TeamColor = true,
@@ -55,12 +55,12 @@ function ESP:IsTeamMate(p)
     return self:GetTeam(p) == self:GetTeam(plr)
 end
 
-function ESP:GetColor(obj)
+function ESP:GetColor(h, s, v)
 	local ov = self.Overrides.GetColor
 	if ov then
-		return ov(obj)
+		return ov(h, s, v)
     end
-    local p = self:GetPlrFromChar(obj)
+    local p = self:GetPlrFromChar(h, s, v)
 	return p and self.TeamColor and p.Team and p.Team.TeamColor.Color or self.Color
 end
 

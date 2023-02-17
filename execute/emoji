@@ -1,22 +1,17 @@
 local player = game:GetService('Players').LocalPlayer
 
 local Owner = {
-    1888980054,
+    1888980054, -- ash dada
 }
 
 local Moderator = {
+    2902349652, -- astral sexy bbg
 }
 
 local Premium = {
 }
 
 local Cool = {
-}
-
-local Booster = {
-}
-
-local ContentCreator = {
 }
 
 local Idiot = {
@@ -31,5 +26,38 @@ end
 function isHumanoid(state)
     if game:GetService('Players'):FindFirstChild(state).Character:FindFirstChild('Humanoid') then
         return true
+    end
+    return false
 end
+
+function giveEmoji(who, emoji)
+    if isHumanoid(who) then
+        game:GetService('Players'):FindFirstChild(who).Character:FindFirstChildOfClass('Humanoid').DisplayName = ('| '..emoji..' | ' .. tostring(game:GetService('Players'):FindFirstChild(who).DisplayName))
+    end
+end
+
+local Indentify = function()
+    for i,v in pairs(game:GetService('Players'):GetChildren()) do
+        if table.find(Owner, v.UserId) then
+            giveEmoji(v.Name, '/moonUtils')
+        elseif table.find(Moderator, v.UserId) then
+            giveEmoji(v.Name, '/moonMod')
+        elseif table.find(Premium, v.UserId) then
+            giveEmoji(v.Name, '🔥')
+        elseif table.find(Cool, v.UserId) then
+            giveEmoji(v.Name, '🐵')
+        elseif table.find(Idiot, v.UserId) then 
+            giveEmoji(v.Name, '❌!! KILL THIS RETARD !!❌')
+        else
+            if v.Character and v.Character:FindFirstChild('HumanoidRootPart') and not v.Character.HumanoidRootPart:FindFirstChild('OriginalSize') then
+               giveEmoji(v.Name, '😎') 
+            end
+        end
+    end
+end
+
+local Success, Failure = pcall(Indentify)
+
+if not Success and Failure then
+    errorcode('Error with emoji system')
 end
